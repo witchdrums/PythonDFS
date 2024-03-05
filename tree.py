@@ -1,3 +1,5 @@
+import random
+
 # Add a vertex to the dictionary
 def agregar_nodo(nodo):
   global grafo
@@ -133,17 +135,65 @@ unir_nodos("Neamt", "Iasi", 87)
 # Obten hoja 1 (ZERIND)
 
 # Obtener frontera
-print(grafo.get("Arad"))
+# print(grafo.get("Arad"))
 
 # Obtener primera HOJA ( ["Zerind", 75] ):
-print(grafo.get("Arad")[0])
+# print(grafo.get("Arad")[0])
 
 # Obtener NOMBRE de hoja ("Zerind"):
-print(grafo.get("Arad")[0][0])
+# print(grafo.get("Arad")[0][0])
 
-nodo_actual = list(grafo.items())[0]
+INDICE_FRONTERA = 1 # ciudad: [nombre de la ciudad : frontera] - La frontera siempre es el índice 1
+INDICE_NOMBRE_CIUDAD = 0 # el nombre de la ciudad siempre es el índice 0
+ciudad_actual = list(grafo.items())[0]
 bucarest = list(grafo.items())[13]
 
+ruta = []
 
+def DFS(ciudad_actual):
+  nombre_ciudad = ciudad_actual[0]
+  if nombre_ciudad == "Bucarest":
+    ruta.append(nombre_ciudad)
+    return
+  else:
+    siguiente_ciudad = get_siguiente_ciudad(ciudad_actual)
+    if siguiente_ciudad == None:
+      print("NONE!!!")
+    else:
+      ruta.append(nombre_ciudad)
+      ciudad_actual = siguiente_ciudad
+      DFS(ciudad_actual)
 
+# deter si hoja no tiene frontera
+def get_siguiente_ciudad(ciudad_actual):
+  FRONTERA = ciudad_actual[INDICE_FRONTERA]
+  nombre_siguiente_ciudad = ""
+
+  #nombre_siguiente_ciudad = get_siguiente_nombre(FRONTERA)
+  nombre_siguiente_ciudad = get_siguiente_nombre_random(FRONTERA)
+  if (nombre_siguiente_ciudad == ""):
+    return None
+  else :
+    # el diccionario regresa la frontera del siguiente nodo SIN su nombre, 
+    # el cual es necesario para buscar a los otros nodos en el diccionario,
+    # por lo que es necesario "reconstruir" el siguiente nodo:
+    FRONTERA_SIGUIENTE_CIUDAD = grafo.get(nombre_siguiente_ciudad)
+    siguiente_ciudad = [nombre_siguiente_ciudad, FRONTERA_SIGUIENTE_CIUDAD]
+    return siguiente_ciudad
+
+def get_siguiente_nombre(FRONTERA):
+  for ciudad in FRONTERA:
+    if not ciudad[INDICE_NOMBRE_CIUDAD] in ruta:
+      return ciudad[INDICE_NOMBRE_CIUDAD]
+    
+def get_siguiente_nombre_random(FRONTERA):
+  return random.choice(FRONTERA)[0]
+  for ciudad in FRONTERA:
+    if not ciudad[INDICE_NOMBRE_CIUDAD] in ruta:
+      return ciudad[INDICE_NOMBRE_CIUDAD]
+
+DFS(ciudad_actual)
+print(ruta)
+#stack.append("Iasi")
+#print(stack.__contains__("Iasi"))
 
