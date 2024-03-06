@@ -144,56 +144,79 @@ unir_nodos("Neamt", "Iasi", 87)
 # print(grafo.get("Arad")[0][0])
 
 INDICE_FRONTERA = 1 # ciudad: [nombre de la ciudad : frontera] - La frontera siempre es el índice 1
-INDICE_NOMBRE_CIUDAD = 0 # el nombre de la ciudad siempre es el índice 0
+INDICE_NOMBRE = 0 # el nombre de la ciudad siempre es el índice 0
 ciudad_actual = list(grafo.items())[0]
-bucarest = list(grafo.items())[13]
-
+ciudad_destino = list(grafo.items())[13]
 ruta = []
+ciudades_visitadas = []
 
-def DFS(ciudad_actual):
-  nombre_ciudad = ciudad_actual[0]
-  if nombre_ciudad == "Bucarest":
-    ruta.append(nombre_ciudad)
+def busqueda_profundidad(ultima_ciudad_visitada):
+  nombre_ciudad_actual = ultima_ciudad_visitada[INDICE_NOMBRE]
+  ciudades_visitadas.append(nombre_ciudad_actual)
+  if nombre_ciudad_actual == ciudad_destino[INDICE_NOMBRE]:
+    ruta.append(nombre_ciudad_actual)
     return
+  
+  siguiente_ciudad = get_siguiente_ciudad(ultima_ciudad_visitada)
+  if siguiente_ciudad == None:
+    print("ERROR:" + ruta.__str__())
+    
+    # podar ciudad sin hojas:
+    ruta.pop()
+
+    # regresar a la última ciudad:
+    nombre_ultima_ciudad_visitada = ruta[-1]
+    ultima_ciudad_visitada = get_ciudad(nombre_ultima_ciudad_visitada)
+
+    # repetir búsqueda con la última ciudad visitada, a ver si tiene hojas nuevas.
+    busqueda_profundidad(ultima_ciudad_visitada)
+
   else:
-    siguiente_ciudad = get_siguiente_ciudad(ciudad_actual)
-    if siguiente_ciudad == None:
-      print("NONE!!!")
-    else:
-      ruta.append(nombre_ciudad)
-      ciudad_actual = siguiente_ciudad
-      DFS(ciudad_actual)
+    # si podamos, ya no hay que agregar la ciudad actual a la ruta:
+    if nombre_ciudad_actual not in ruta:
+      ruta.append(nombre_ciudad_actual)
 
-# deter si hoja no tiene frontera
+    busqueda_profundidad(siguiente_ciudad)
+
+# regresa None si no hay una ciudad con hojas nuevas:
 def get_siguiente_ciudad(ciudad_actual):
-  FRONTERA = ciudad_actual[INDICE_FRONTERA]
+  frontera = ciudad_actual[INDICE_FRONTERA]
   nombre_siguiente_ciudad = ""
+  nombre_siguiente_ciudad = get_siguiente_nombre_random(frontera)
 
-  #nombre_siguiente_ciudad = get_siguiente_nombre(FRONTERA)
-  nombre_siguiente_ciudad = get_siguiente_nombre_random(FRONTERA)
+  # si la ciudad elegida no tiene hojas nuevas:
   if (nombre_siguiente_ciudad == ""):
     return None
   else :
-    # el diccionario regresa la frontera del siguiente nodo SIN su nombre, 
-    # el cual es necesario para buscar a los otros nodos en el diccionario,
-    # por lo que es necesario "reconstruir" el siguiente nodo:
-    FRONTERA_SIGUIENTE_CIUDAD = grafo.get(nombre_siguiente_ciudad)
-    siguiente_ciudad = [nombre_siguiente_ciudad, FRONTERA_SIGUIENTE_CIUDAD]
+    siguiente_ciudad = get_ciudad(nombre_siguiente_ciudad)
     return siguiente_ciudad
 
+# regresa "" si la frontera no tiene una hoja que no haya sido visitada:
 def get_siguiente_nombre(FRONTERA):
   for ciudad in FRONTERA:
-    if not ciudad[INDICE_NOMBRE_CIUDAD] in ruta:
-      return ciudad[INDICE_NOMBRE_CIUDAD]
-    
-def get_siguiente_nombre_random(FRONTERA):
-  return random.choice(FRONTERA)[0]
-  for ciudad in FRONTERA:
-    if not ciudad[INDICE_NOMBRE_CIUDAD] in ruta:
-      return ciudad[INDICE_NOMBRE_CIUDAD]
+    if not ciudad[INDICE_NOMBRE] in ciudades_visitadas:
+      ciudades_visitadas.append(ciudad[INDICE_NOMBRE])
+      return ciudad[INDICE_NOMBRE]
+  
+# igual al anterior pero random, para probar distintos escenarios de ruteo:
+def get_siguiente_nombre_random(frontera):
+  siguiente_nombre = ""
+  while len(frontera) > 0:
+    ciudad = frontera.pop(random.randint(0,len(frontera)-1)) 
+    if not ciudad[INDICE_NOMBRE] in ciudades_visitadas:
+      siguiente_nombre = ciudad[INDICE_NOMBRE]
+      break
+  return siguiente_nombre
 
-DFS(ciudad_actual)
-print(ruta)
-#stack.append("Iasi")
-#print(stack.__contains__("Iasi"))
+def get_ciudad(nombre_ciudad):
+  # el diccionario regresa la frontera del siguiente nodo SIN su nombre, 
+  # el cual es necesario para buscar a los otros nodos en el diccionario,
+  # por lo que es necesario "reconstruir" el siguiente nodo:
+  frontera_ciudad = grafo.get(nombre_ciudad)
+  return [nombre_ciudad, frontera_ciudad]
 
+ciudad_actual = get_ciudad("Arad")
+ciudad_destino = get_ciudad("Bucarest")
+
+busqueda_profundidad(ciudad_actual)
+print("\nFINAL: " + ruta.__str__())
