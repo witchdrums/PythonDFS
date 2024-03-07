@@ -1,0 +1,34 @@
+# Pseudocodigo y experimentos (codigo del algoritmo está en busqueda_profundidad.py):
+
+########### VALIDAR REPETIDOS
+# lista = [1, 2, 3]
+# print(lista.__contains__(4))
+
+########### ALGORITMO:
+
+# ARAD es BUCAREST? No                          <--- programa recibe nodo de ARAD primero
+# Push ARAD a Queue -> [ARAD]                   <--- se pushea el NODO, no el nombre solito
+# Obten frontera -> [ZERIND, SIBIU, TIMISOARA]
+# Obten hoja 1 (ZERIND)
+# ZERIND en Queue? No
+
+# ZERIND es BUCAREST? No
+# Push ZERIND a Queue -> [ARAD, ZERIND]
+# Obten frontera [ARAD, ORADEA]
+# Obten hoja 1 [ARAD]                           <--- while?
+# ARAD en Queue? Sí
+# Obten hoja 2 [ORADEA]
+# ORADEA en Queue? No
+
+# ORADEA es BUCAREST? No
+# Obten ORADEA.frontera [ZERIND, SIBIU]
+# Obten hoja 1 (ZERIND)
+
+# Obtener frontera
+# print(grafo.get("Arad"))
+
+# Obtener primera HOJA ( ["Zerind", 75] ):
+# print(grafo.get("Arad")[0])
+
+# Obtener NOMBRE de hoja ("Zerind"):
+# print(grafo.get("Arad")[0][0])
